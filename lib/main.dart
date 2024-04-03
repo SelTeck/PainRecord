@@ -1,23 +1,20 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:flutter/services.dart';
-
 import 'package:mobile_number/mobile_number.dart';
 import 'package:pain_record/commmon/commons.dart';
 import 'package:pain_record/commmon/define.dart';
 import 'package:pain_record/model/result.dart';
 import 'package:pain_record/model/stimulusInfor.dart';
-import 'package:pain_record/views/tap_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:pain_record/model/userInfor.dart';
 import 'package:pain_record/session/session.dart';
+import 'package:pain_record/views/tap_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
