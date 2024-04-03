@@ -1,14 +1,18 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:mobile_number/mobile_number.dart';
 import 'package:pain_record/commmon/commons.dart';
 import 'package:pain_record/commmon/define.dart';
+import 'package:pain_record/model/result.dart';
 import 'package:pain_record/model/stimulusInfor.dart';
 import 'package:pain_record/views/tap_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,10 +21,19 @@ import 'package:pain_record/model/userInfor.dart';
 import 'package:pain_record/session/session.dart';
 
 void main() {
-  //앱 실행할 준비가 완료될 때까지 기다린다.
   WidgetsFlutterBinding.ensureInitialized();
 
+  // if (Platform.isAndroid) {
+  //   await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
+  // }
+
   runApp(const MyApp());
+  EasyLoading.instance
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..maskType = EasyLoadingMaskType.black
+    ..animationStyle = EasyLoadingAnimationStyle.scale
+    ..indicatorType = EasyLoadingIndicatorType.wave
+    ..dismissOnTap = false;
 }
 
 class MyApp extends StatelessWidget {
@@ -30,7 +43,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: '통증 기록',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -40,6 +52,7 @@ class MyApp extends StatelessWidget {
         // ),
       ),
       home: const HomeScreen(),
+      builder: EasyLoading.init(),
     );
   }
 }
@@ -49,7 +62,6 @@ class HomeScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _HomeScreenView();
-  // State<StatefulWidget> createState() => _SettingView();
 }
 
 class _HomeScreenView extends State<HomeScreen> {
@@ -85,6 +97,8 @@ class _HomeScreenView extends State<HomeScreen> {
         url: '${Session.host}/auth/users', body: jsonEncode(body));
 
     if (response.statusCode < 200 || response.statusCode > 400) {
+      final result = Result.fromJson(json.decode(response.body));
+      Fluttertoast.showToast(msg: result.message);
       return null;
     }
 
@@ -122,12 +136,13 @@ class _HomeScreenView extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    MobileNumber.listenPhonePermission((isPermissionGranted) {
-      if (isPermissionGranted) {
-        initMobileNumberState();
-        setState(() {});
-      } else {}
-    });
+    // MobileNumber.listenPhonePermission((isPermissionGranted) {
+    //   if (isPermissionGranted) {
+    //     initMobileNumberState();
+    //     setState(() {});
+    //   } else {}
+    // });
+    _fetchPhoneNumberCheck(_mobileNumber);
   }
 
   @override
@@ -138,7 +153,7 @@ class _HomeScreenView extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('가나다라')),
+      navigationBar: const CupertinoNavigationBar(),
       child: Center(
         child: Stack(
           children: [
