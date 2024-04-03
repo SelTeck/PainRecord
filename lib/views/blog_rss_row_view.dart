@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pain_record/commmon/commons.dart';
 import 'package:pain_record/model/blogrss.dart';
 import 'package:pain_record/views/blog_detail_view.dart';
 
@@ -12,7 +11,6 @@ class BlogRssRowView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Commons.logger.d('click is ${item.index}');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -24,46 +22,54 @@ class BlogRssRowView extends StatelessWidget {
       },
       child: Column(
         children: [
-          Stack(
+          Row(
             children: [
-              Container(
-                width: 330, // dp 계산인 듯
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(2.0, 2.0, 4.0, 1.0),
-                  child: Text(
-                    textAlign: TextAlign.justify,
-                    item.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: false,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(2.0, 2.0, 4.0, 1.0),
+                child: Text(
+                  textAlign: TextAlign.justify,
+                  item.createAtTime,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              Container(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(2.0, 2.0, 4.0, 1.0),
-                  child: Text(
-                    textAlign: TextAlign.end,
-                    item.createAtTime,
-                    style: const TextStyle(fontSize: 15),
+              Flexible(
+                child: Container(
+                  margin: const EdgeInsets.only(left: 4.0),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(2.0, 2.0, 4.0, 1.0),
+                    child: Text(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                      '(${item.title})',
+                      style: const TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          Text(
-            item.synopsis,
-            maxLines: 3,
-            style: const TextStyle(
-              fontSize: 13,
+          const SizedBox(
+            width: double.infinity,
+            height: 1.0,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4.0, 2.0, 4.0, 2.0),
+            child: Text(
+              item.synopsis,
+              maxLines: 3,
+              style: const TextStyle(
+                fontSize: 13,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
