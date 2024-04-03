@@ -1,6 +1,5 @@
-import 'dart:io';
-import 'package:blurry_modal_progress_hud/blurry_modal_progress_hud.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/material.dart';
 import 'package:pain_record/views/blog_comment_view.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -20,13 +19,11 @@ class BlogDetailView extends StatefulWidget {
 }
 
 class _BlogDetailView extends State<BlogDetailView> {
-  bool _isLoading = true;
+  final GlobalKey webViewKey = GlobalKey();
   late final WebViewController _controller;
 
   @override
   void initState() {
-    super.initState();
-
     late final PlatformWebViewControllerCreationParams params;
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
@@ -42,10 +39,11 @@ class _BlogDetailView extends State<BlogDetailView> {
       ..setBackgroundColor(Colors.white)
       ..loadRequest(Uri.parse(widget.url))
       ..setNavigationDelegate(NavigationDelegate(
+        onPageStarted: (url) {
+          EasyLoading.show(status: 'Loading...');
+        },
         onPageFinished: (url) {
-          setState(() {
-            _isLoading = false;
-          });
+          EasyLoading.dismiss();
         },
       ));
     // #docregion platform_features
@@ -54,64 +52,54 @@ class _BlogDetailView extends State<BlogDetailView> {
       (_controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
     }
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlurryModalProgressHUD(
-      inAsyncCall: _isLoading,
-      blurEffectIntensity: 4,
-      progressIndicator: const SpinKitFadingCircle(
-        color: Colors.purple,
-        size: 50.0,
-      ),
-      dismissible: false,
-      opacity: 0.7,
-      color: Colors.black45,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            '상세 보기',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 4.0,
-              ),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          BlogCommentView(blogIndex: widget.blogIndex),
-                      fullscreenDialog: false,
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.upload,
-                  size: 20,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  '댓글',
-                  style: TextStyle(color: Colors.white, fontSize: 17.0),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          '상세 보기',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 4.0,
+            ),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        BlogCommentView(blogIndex: widget.blogIndex),
+                    fullscreenDialog: false,
                   ),
+                );
+              },
+              icon: const Icon(
+                Icons.upload,
+                size: 20,
+                color: Colors.white,
+              ),
+              label: const Text(
+                '댓글',
+                style: TextStyle(color: Colors.white, fontSize: 17.0),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.lightBlue[300],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
                 ),
               ),
             ),
-          ],
-        ),
-        body: SafeArea(
-          child: WebViewWidget(controller: _controller),
-        ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: WebViewWidget(controller: _controller),
       ),
     );
   }
