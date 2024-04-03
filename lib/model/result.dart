@@ -1,12 +1,14 @@
 class Result {
   final String message;
 
-  const Result({required this.message});
+  int status = 0;
+
+  Result({required this.message});
 
   factory Result.fromJson(Map<String, dynamic>? json) {
     return json != null
         ? Result(message: json['message'])
-        : Result.message(msg: 'null');
+        : Result.message(msg: '');
   }
 
   factory Result.message({required String msg}) {
