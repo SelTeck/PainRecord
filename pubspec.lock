@@ -25,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  blurry_modal_progress_hud:
-    dependency: "direct main"
-    description:
-      name: blurry_modal_progress_hud
-      sha256: f3b176830f026bbe0f477029c785b1c3a842f2bb4393da05cc7ef7eb0587f25c
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -126,6 +118,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_easyloading:
+    dependency: "direct main"
+    description:
+      name: flutter_easyloading
+      sha256: ba21a3c883544e582f9cc455a4a0907556714e1e9cf0eababfcb600da191d17c
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.5"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -181,6 +181,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      name: fluttertoast
+      sha256: dfdde255317af381bfc1c486ed968d5a43a2ded9c931e87cbecd88767d6a71c1
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.2.4"
   get:
     dependency: "direct main"
     description:
