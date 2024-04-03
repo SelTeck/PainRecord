@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-import 'package:pain_record/commmon/commons.dart';
 import 'package:pain_record/commmon/define.dart';
 import 'package:pain_record/model/blogrss.dart';
 import 'package:pain_record/session/session.dart';
@@ -24,6 +23,71 @@ class _RssListView extends State<RssListView> {
 
   late List<BlogRss> _blogPageList;
   late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _page = 0;
+    _blogPageList = List.empty(growable: true);
+    _scrollController = ScrollController()..addListener(onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: FutureBuilder<List<BlogRss>>(
+        future: _fetchBlogRssList(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            // return Text('Press button to start.');
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+            // return Text('Awaiting result...');
+            case ConnectionState.done:
+              {
+                if (snapshot.hasData) {
+                  List<BlogRss> list = snapshot.data!;
+                  if (_blogPageList.isEmpty) {
+                    _blogPageList.addAll(list);
+                  }
+                  return RefreshIndicator(
+                      key: _refreshIndicatorKey,
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        separatorBuilder: (context, index) => const Divider(
+                          color: Colors.black,
+                        ),
+                        itemBuilder: (context, index) {
+                          return BlogRssRowView(item: _blogPageList[index]);
+                        },
+                        itemCount: _blogPageList.length,
+                      ),
+                      onRefresh: () async {
+                        setState(() {
+                          _page = 0;
+                          _blogPageList.clear();
+                        });
+                      });
+                } else if (snapshot.hasError) {
+                  throw Error.safeToString(snapshot.error);
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+          }
+        },
+      ),
+    );
+  }
 
   Future<List<BlogRss>> _fetchBlogRssList() async {
     return _memoizer.runOnce(() async {
@@ -76,75 +140,5 @@ class _RssListView extends State<RssListView> {
       print('SelTeck ... called onScroll more Add item');
       _loadMoreBlogRss();
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _page = 0;
-    _blogPageList = List.empty(growable: true);
-    _scrollController = ScrollController()..addListener(onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: FutureBuilder<List<BlogRss>>(
-        future: _fetchBlogRssList(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            // return Text('Press button to start.');
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-            // return Text('Awaiting result...');
-            case ConnectionState.done:
-              {
-                if (snapshot.hasData) {
-                  List<BlogRss> list = snapshot.data!;
-                  if (_blogPageList.isEmpty) {
-                    _blogPageList.addAll(list);
-                  }
-                  return RefreshIndicator(
-                      key: _refreshIndicatorKey,
-                      child: ListView.separated(
-                        controller: _scrollController,
-                        separatorBuilder: (context, index) => const Divider(
-                          color: Colors.black,
-                        ),
-                        itemBuilder: (context, index) {
-                          // if (index == snapshot.data!.length - 1) {
-                          //   Commons.logger.e('SelTeck, LastItem');
-                          // }
-                          return BlogRssRowView(item: _blogPageList[index]);
-                        },
-                        itemCount: _blogPageList.length,
-                      ),
-                      onRefresh: () async {
-                        setState(() {
-                          _page = 0;
-                          _blogPageList.clear();
-                        });
-                        print('SelTeck ... called onRefresh _page is $_page');
-                      });
-                } else if (snapshot.hasError) {
-                  // throw Error.safeToString(snapshot.error);
-                  Commons.logger.e('error is ${snapshot.error}');
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-          }
-        },
-      ),
-    );
   }
 }
