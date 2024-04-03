@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pain_record/views/rss_list_view.dart';
 import 'package:pain_record/views/setting_view.dart';
+import 'package:pain_record/views/show_data_view.dart';
 
 class TapView extends StatefulWidget {
   const TapView({Key? key}) : super(key: key);
@@ -10,8 +11,12 @@ class TapView extends StatefulWidget {
 }
 
 class _TapView extends State<TapView> {
-  final pages = [const RssListView(), const SettingView()];
-  final titles = ['목록 보기', '설정'];
+  final pages = [
+    const RssListView(),
+    const ShowDataView(),
+    const SettingView()
+  ];
+  final titles = ['목록 보기', '기록', '설정'];
 
   int _selectIndex = 0;
 
@@ -43,6 +48,8 @@ class _TapView extends State<TapView> {
             icon: Icon(Icons.list),
             label: '목록',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.data_thresholding_outlined), label: '기록'),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: '설정',
