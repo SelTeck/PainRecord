@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:pain_record/provider/comment_provider.dart';
 import 'package:pain_record/provider/main_provider.dart';
-import 'package:pain_record/provider/rss_list_provider.dart';
 import 'package:pain_record/views/tap_view.dart';
 import 'package:provider/provider.dart';
 
