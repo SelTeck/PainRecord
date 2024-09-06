@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:pain_record/provider/main_provider.dart';
+import 'package:pain_record/commmon/commons.dart';
+import 'package:pain_record/provider/auth_provider.dart';
 import 'package:pain_record/views/tap_view.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,7 @@ void main() {
   // }
 
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context) => MainProvider()),
+    ChangeNotifierProvider(create: (context) => AuthProvider()),
     // ChangeNotifierProvider(create: (context) => RssListProvider()),
     // ChangeNotifierProvider(create: (context) => CommentProvider()),
     // ChangeNotifierProvider(create: (context) => SettingProvider()),
@@ -43,54 +44,60 @@ class MyApp extends StatelessWidget {
         //     button: TextStyle(fontSize: 13.sp)
         // ),
       ),
-      home: const HomeScreenLayout(),
+      home: const HomeScreen(),
       builder: EasyLoading.init(),
     );
   }
 }
 
-class HomeScreenLayout extends StatelessWidget {
-  const HomeScreenLayout({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _HomeScreenLayout();
+}
+
+class _HomeScreenLayout extends State<HomeScreen> {
   final _mobileNumber = '010-8954-6897';
+
+  late AuthProvider _authProvider;
+
+  _HomeScreenLayout() {}
+
+  @override
+  void initState() {
+    super.initState();
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _loginUser();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MainProvider>(context, listen: false);
     return CupertinoPageScaffold(
       child: Center(
-        child: Stack(
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/flutter-logo_drzj7u.png'),
-                ),
-              ),
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/flutter-logo_drzj7u.png'),
             ),
-            FutureBuilder(
-              future: provider.fetchUserCheck(_mobileNumber),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data == true) {
-                    Future.delayed(Duration.zero, () {
-                      Get.off(
-                        const TapView(),
-                      );
-                    });
-                  }
-                } else if (snapshot.hasError) {
-                  throw Error.safeToString(snapshot.error);
-                }
-
-                return Container(
-                  alignment: Alignment.bottomCenter,
-                  child: const LinearProgressIndicator(),
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  _loginUser() async {
+    try {
+      if (await _authProvider.fetchUserCheck(_mobileNumber) == true) {
+        // Future.delayed(Duration.zero, () {
+        Get.off(
+          const TapView(),
+        );
+        // });
+      }
+    } catch (e) {
+      print('Error: $e');
+      // TODO 로그인 실패 로직 추가
+    }
   }
 }

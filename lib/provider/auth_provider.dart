@@ -7,7 +7,7 @@ import 'package:pain_record/model/stimulusInfor.dart';
 import 'package:pain_record/model/userInfor.dart';
 import 'package:pain_record/session/session.dart';
 
-class MainProvider with ChangeNotifier {
+class AuthProvider with ChangeNotifier {
   late String _token;
   int _typeA = -1, _typeB = -1, _typeC = -1;
 
@@ -28,8 +28,7 @@ class MainProvider with ChangeNotifier {
 
     if (userRes.statusCode == 200) {
       result = null;
-      final userInfor = UserInfor.fromJson(json.decode(userRes.body));
-      _token = userInfor.token;
+      _token = UserInfor.fromJson(json.decode(userRes.body)).token;
 
       final stimulustInforRes =
           await Session.get(url: '${Session.host}/auth/stimulus');
