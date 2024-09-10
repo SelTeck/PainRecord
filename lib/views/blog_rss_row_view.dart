@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pain_record/model/blogrss.dart';
 import 'package:pain_record/views/blog_detail_view.dart';
 
 class BlogRssRowView extends StatelessWidget {
   final BlogRss item;
 
-  const BlogRssRowView({Key? key, required this.item}) : super(key: key);
+  const BlogRssRowView({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                BlogDetailView(url: item.url, blogIndex: item.index),
-            fullscreenDialog: false,
-          ),
-        );
+        Get.to(BlogDetailView(url: item.url, blogIndex: item.index));
       },
       child: Column(
         children: [
