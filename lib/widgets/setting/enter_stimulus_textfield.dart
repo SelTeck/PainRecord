@@ -6,11 +6,10 @@ class EnterStimulusTextfield extends StatelessWidget {
   final TextEditingController controller;
 
   const EnterStimulusTextfield(
-      {Key? key,
+      {super.key,
       required this.content,
       required this.hint,
-      required this.controller})
-      : super(key: key);
+      required this.controller});
 
   @override
   Widget build(BuildContext context) {
