@@ -6,6 +6,7 @@ class CommentInfo {
   final bool takeAnalogesic;
   final bool takeNarcotic;
   final bool usePath;
+  final String comment;
   final int swellingLv;
   final int activeMode;
   final int sleepMode;
@@ -19,6 +20,7 @@ class CommentInfo {
       required this.takeAnalogesic,
       required this.takeNarcotic,
       required this.usePath,
+      required this.comment,
       required this.swellingLv,
       required this.activeMode,
       required this.sleepMode,
@@ -33,6 +35,7 @@ class CommentInfo {
         takeAnalogesic: json['Analgesic'],
         takeNarcotic: json['Narcotic'],
         usePath: json['usePath'],
+        comment: json['comment'],
         swellingLv: json['swellingLv'],
         activeMode: json['activeMode'],
         sleepMode: json['sleepMode'],
