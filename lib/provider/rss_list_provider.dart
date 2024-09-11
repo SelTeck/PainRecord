@@ -8,10 +8,7 @@ import 'package:pain_record/session/session.dart';
 class RssListProvider with ChangeNotifier {
   var _page = 0;
   // final _memoizer = AsyncMemoizer<List<BlogRss>>();
-  final List<BlogRss> _blogPageList = [];
-
   set page(int page) => _page = page;
-  List<BlogRss> get blogPageList => _blogPageList;
 
   Future<List<BlogRss>> fetchBlogRssList(String token) async {
     _page += 1;
