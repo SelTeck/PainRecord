@@ -9,7 +9,6 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-//*
 class BlogDetailView extends StatefulWidget {
   final String url;
   final int blogIndex;
@@ -96,7 +95,7 @@ class _BlogDetailView extends State<BlogDetailView> {
           ),
         ),
       ),
-      child: SafeArea(
+      child: CupertinoPageScaffold(
         child: WebViewWidget(controller: _controller),
       ),
     );
@@ -110,4 +109,3 @@ class _BlogDetailView extends State<BlogDetailView> {
     await EasyLoading.dismiss();
   }
 }
-// */
