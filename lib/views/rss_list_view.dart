@@ -26,13 +26,14 @@ class _RssListView extends State<RssListView> {
 
   @override
   void initState() {
+    _provider = RssListProvider();
     _blogPageList = List.empty(growable: true);
     _token = Provider.of<AuthProvider>(context, listen: false).token;
-    _provider = Provider.of<RssListProvider>(context, listen: false);
     _scrollController = ScrollController()..addListener(onScroll);
 
-    _searchRssList();
     super.initState();
+    _provider.page = 0;
+    _searchRssList();
   }
 
   @override
