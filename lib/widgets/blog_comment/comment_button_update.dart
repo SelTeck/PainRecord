@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CommentUpdateButton extends StatelessWidget {
+class CommentButtonUpdate extends StatelessWidget {
   final Function() onPressed;
-  const CommentUpdateButton({super.key, required this.onPressed});
+  const CommentButtonUpdate({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,6 @@ class CommentUpdateButton extends StatelessWidget {
       child: ElevatedButton.icon(
         onPressed: () {
           onPressed();
-          // _isHaveData ? _updateComment() : _saveComment();
         },
         icon: const Icon(
           Icons.upload,

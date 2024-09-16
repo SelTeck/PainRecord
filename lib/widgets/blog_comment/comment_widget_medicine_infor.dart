@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CommentMedicineInput extends StatelessWidget {
+class CommentWidgetMedicineInfor extends StatelessWidget {
   final _isTakeMorning = false.obs;
   final _isTakeDinner = false.obs;
   final _isTakePatch = false.obs;
   final _isAntiAnalgesic = false.obs;
   final _isNarcoticAnalgesic = false.obs;
 
-  CommentMedicineInput({super.key});
+  CommentWidgetMedicineInfor({super.key});
 
   @override
   Widget build(BuildContext context) {

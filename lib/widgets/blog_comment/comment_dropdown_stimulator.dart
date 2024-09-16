@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CommentSwellDropdownButton extends StatelessWidget {
-  final List<String> _list = <String>['안 부음', '조금 부음', '제법 부음', '많이 부음'];
-  final SwellingController controller;
+class CommentDropDownStimulator extends StatelessWidget {
+  final List<String> _list = <String>['선택', 'A', 'B', 'C'];
+  final StimulatorController controller;
+  CommentDropDownStimulator({super.key, required this.controller});
 
   List<String> get list => _list;
-  CommentSwellDropdownButton({super.key, required this.controller});
 
   @override
-  Widget build(Object context) {
+  Widget build(BuildContext context) {
     return Obx(
       () => DropdownButton(
         isExpanded: true,
@@ -20,7 +20,7 @@ class CommentSwellDropdownButton extends StatelessWidget {
             child: Text(items),
           );
         }).toList(),
-        onChanged: (String? value) {
+        onChanged: (value) {
           controller.value = value!;
         },
       ),
@@ -28,9 +28,12 @@ class CommentSwellDropdownButton extends StatelessWidget {
   }
 }
 
-class SwellingController extends GetxController {
-  final RxString _value = '안 부음'.obs;
+class StimulatorController extends GetxController {
+  final RxString _value = '선택'.obs;
 
   String get value => _value.value;
-  set value(String value) => _value.value = value;
+  set value(String value) {
+    _value.value = value;
+    update();
+  }
 }
