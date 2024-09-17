@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class EnterStimulusTextfield extends StatelessWidget {
+class SettingTextfieldStimulusInfor extends StatelessWidget {
   final String content, hint;
   final TextEditingController controller;
 
-  const EnterStimulusTextfield(
+  const SettingTextfieldStimulusInfor(
       {super.key,
       required this.content,
       required this.hint,
@@ -36,16 +36,19 @@ class EnterStimulusTextfield extends StatelessWidget {
             child: TextFormField(
               textAlign: TextAlign.center,
               // keyboardType: TextInputType.number,
+              keyboardType: const TextInputType.numberWithOptions(
+                  signed: true, decimal: true),
               showCursor: true,
               controller: controller,
               inputFormatters: <TextInputFormatter>[
                 LengthLimitingTextInputFormatter(4),
                 // FilteringTextInputFormatter.digitsOnly,
-                FilteringTextInputFormatter.singleLineFormatter,
+                // FilteringTextInputFormatter.singleLineFormatter,
                 FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)')),
               ],
               decoration: InputDecoration(
                 hintText: hint,
+                hintStyle: const TextStyle(color: Colors.grey),
                 contentPadding: EdgeInsets.zero, // align center
                 border: const OutlineInputBorder(),
                 focusedBorder: const OutlineInputBorder(
@@ -56,9 +59,15 @@ class EnterStimulusTextfield extends StatelessWidget {
               ),
               onChanged: (value) {
                 if (!value.contains('.')) {
-                  if (value.characters.length > 2) {
-                    controller.text = '';
-                    controller.text = '${value.substring(0, 2)}.';
+                  if (value.characters.length > 1) {
+                    controller.text =
+                        '${value.substring(0, 1)}.${value.substring(1, value.length)}';
+                  }
+                } else {
+                  if (value.characters.length > 3) {
+                    value = value.replaceAll('.', '');
+                    controller.text =
+                        '${value.substring(0, 2)}.${value.substring(2, value.length)}';
                   }
                 }
               },
