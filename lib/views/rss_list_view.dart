@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:pain_record/session/session.dart';
 import 'package:pain_record/model/blogrss.dart';
 import 'package:pain_record/provider/auth_provider.dart';
 import 'package:pain_record/provider/rss_list_provider.dart';
@@ -78,7 +79,8 @@ class _RssListView extends State<RssListView> {
   Future<void> _searchRssList() async {
     EasyLoading.show(status: "Loading...");
 
-    List<BlogRss> list = await _provider.fetchBlogRssList(_token);
+    Session.headers['Authorization'] = 'Bearer $_token';
+    List<BlogRss> list = await _provider.fetchBlogRssList();
     setState(() {
       _blogPageList.addAll(list);
     });
