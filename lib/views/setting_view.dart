@@ -3,22 +3,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:pain_record/model/result.dart';
-import 'package:pain_record/model/stimulusDetail.dart';
-import 'package:pain_record/model/stimulusInput.dart';
-import 'package:pain_record/session/session.dart';
-import 'package:pain_record/widgets/setting/enter_stimulus_textfield.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pain_record/provider/auth_provider.dart';
+import 'package:pain_record/provider/setting_provider.dart';
+import 'package:pain_record/widgets/setting/setting_textfield_stimulus_infor.dart';
+import 'package:pain_record/widgets/setting/setting_dropdown_stimulus.dart';
+import 'package:provider/provider.dart';
 
 class SettingView extends StatefulWidget {
-  const SettingView({Key? key}) : super(key: key);
+  const SettingView({super.key});
 
   @override
   State<StatefulWidget> createState() => _SettingView();
 }
 
 class _SettingView extends State<SettingView> {
-  final List<String> _stimulusModes = ['선택', 'A', 'B', 'C'];
+  // final RxString _selectStimulus = '선택'.obs;
+  // final List<String> _stimulusModes = ['선택', 'A', 'B', 'C'];
 
   final _uprightController = TextEditingController();
   final _lyingBackController = TextEditingController();
@@ -27,13 +27,34 @@ class _SettingView extends State<SettingView> {
   final _recliningController = TextEditingController();
   final _lyingFrontController = TextEditingController();
 
-  late String _selectStimulusMode;
-  late SharedPreferences pref;
+  late int _curStimulusIndex;
+  late AuthProvider _authProvider;
+  late SettingProvider _settingProvider;
+  late SettingDropdownStimulus _dropdownStimulus;
 
   @override
   void initState() {
-    initData();
-    _selectStimulusMode = '선택';
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _curStimulusIndex = 0;
+    _settingProvider = SettingProvider();
+    _dropdownStimulus = SettingDropdownStimulus(
+        controller: StimulusController(),
+        onChanged: () {
+          if (_dropdownStimulus.controller.value == '선택') {
+            _clearTextEditingController();
+          } else {
+            if (_dropdownStimulus.controller.value == 'A') {
+              _curStimulusIndex = _authProvider.typeA;
+            } else if (_dropdownStimulus.controller.value == 'B') {
+              _curStimulusIndex = _authProvider.typeB;
+            } else {
+              // if (_dropdownStimulus.controller.value == 'C') {
+              _curStimulusIndex = _authProvider.typeC;
+            }
+            searchStimulusInfor();
+          }
+        });
+
     super.initState();
   }
 
@@ -94,55 +115,32 @@ class _SettingView extends State<SettingView> {
                                   padding: const EdgeInsets.fromLTRB(
                                       2.0, 2.0, 8.0, 2.0),
                                   margin: const EdgeInsets.only(right: 8.0),
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    value: _selectStimulusMode,
-                                    items: _stimulusModes.map((String items) {
-                                      return DropdownMenuItem(
-                                        value: items,
-                                        child: Text(items),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      _selectStimulusMode = value!;
-                                      if (_stimulusModes.indexOf(value) == 0) {
-                                        setState(() {
-                                          _clearTextEditingController();
-                                        });
-                                      } else {
-                                        _showLoading(
-                                            msg:
-                                                "Search Stimulus Information...");
-                                        setState(() {});
-                                        _getStimulusInfor();
-                                      }
-                                    },
-                                  ),
+                                  child: _dropdownStimulus,
                                 ),
                               ),
                             ],
                           ),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '서있는 자세',
                               hint: '10.0',
                               controller: _uprightController),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '누워있는 자세',
                               hint: '10.0',
                               controller: _lyingBackController),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '왼쪽으로 누운 자세',
                               hint: '10.0',
                               controller: _lyingLeftController),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '오른쪽으로 누운 자세',
                               hint: '10.0',
                               controller: _lyingRightController),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '기대어 있는 자세',
                               hint: '10.0',
                               controller: _recliningController),
-                          EnterStimulusTextfield(
+                          SettingTextfieldStimulusInfor(
                               content: '엎드린 자세',
                               hint: '10.0',
                               controller: _lyingFrontController),
@@ -151,9 +149,7 @@ class _SettingView extends State<SettingView> {
                             alignment: Alignment.centerRight,
                             child: ElevatedButton(
                               onPressed: () {
-                                _showLoading(msg: "Uploading...");
-                                _uploadStimulusInfor();
-                                // setState(() {});
+                                uploadStimulusInfor();
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
@@ -182,12 +178,8 @@ class _SettingView extends State<SettingView> {
     );
   }
 
-  void initData() async {
-    pref = await SharedPreferences.getInstance();
-  }
-
   void _clearTextEditingController() {
-    _selectStimulusMode = '선택';
+    _curStimulusIndex = 0;
     _uprightController.text = '';
     _lyingBackController.text = '';
     _lyingLeftController.text = '';
@@ -196,67 +188,56 @@ class _SettingView extends State<SettingView> {
     _lyingFrontController.text = '';
   }
 
-  void _getStimulusInfor() async {
-    final type = 'TYPE_$_selectStimulusMode';
-    final index = pref.getInt(type);
-
-    final response = await Session.get(
-        url: '${Session.host}/records/data/stimulus/detail/$index');
-
-    if (response.statusCode == 200) {
-      final detail = StimulusDetail.fromJson(jsonDecode(response.body));
-      _uprightController.text = '${detail.upright}';
-      _lyingBackController.text = '${detail.lyingBack}';
-      _lyingLeftController.text = '${detail.lyingLeft}';
-      _lyingRightController.text = '${detail.lyingRight}';
-      _recliningController.text = '${detail.reclining}';
-      _lyingFrontController.text = '${detail.lyingFront}';
-    } else if (response.statusCode < 200 || response.statusCode > 400) {
-      final result = Result.fromJson(jsonDecode(response.body));
-      Fluttertoast.showToast(msg: result.message);
-    }
-
-    _hideLoading();
-  }
-
-  void _uploadStimulusInfor() async {
-    if (_stimulusModes.indexOf(_selectStimulusMode) == 0) {
-      Fluttertoast.showToast(msg: 'Stimulator 자극 타입을 선택하세요.');
-      return null;
-    }
-
-    Map<String, dynamic> params = {
-      'type': _selectStimulusMode,
-      'upright': double.parse(_uprightController.text),
-      'lyingFront': double.parse(_lyingFrontController.text),
-      'lyingBack': double.parse(_lyingBackController.text),
-      'lyingLeft': double.parse(_lyingLeftController.text),
-      'lyingRight': double.parse(_lyingRightController.text),
-      'reclining': double.parse(_recliningController.text),
-    };
-
-    final response = await Session.post(
-        url: '${Session.host}/records/data/input/stimulus/info',
-        body: jsonEncode(params));
-
-    late Result result;
-    if (response.statusCode == 200 || response.statusCode == 409) {
-      result = StimulusInput.fromJson(jsonDecode(response.body));
-      final type = 'TYPE_$_selectStimulusMode';
-      pref.setInt(type, (result as StimulusInput).number);
+  Future<void> searchStimulusInfor() async {
+    EasyLoading.show(status: 'Searching...');
+    final stimulusDetail =
+        await _settingProvider.fetchStimulusInfor(_curStimulusIndex);
+    if (stimulusDetail == null) {
+      Fluttertoast.showToast(msg: 'Failed search Stimulus Information');
     } else {
-      result = Result.fromJson(jsonDecode(response.body));
+      _uprightController.text = '${stimulusDetail.upright}';
+      _lyingBackController.text = '${stimulusDetail.lyingBack}';
+      _lyingLeftController.text = '${stimulusDetail.lyingLeft}';
+      _lyingRightController.text = '${stimulusDetail.lyingRight}';
+      _recliningController.text = '${stimulusDetail.reclining}';
+      _lyingFrontController.text = '${stimulusDetail.lyingFront}';
     }
-
-    _hideLoading();
-    Fluttertoast.showToast(msg: result.message);
+    EasyLoading.dismiss();
   }
 
-  void _showLoading({String? msg}) async {
-    await EasyLoading.show(status: msg);
-  }
+  Future<void> uploadStimulusInfor() async {
+    if (_dropdownStimulus.controller.value == '선택') {
+      Fluttertoast.showToast(msg: 'Stimulator 자극 타입을 선택하세요.');
+    } else {
+      EasyLoading.show(status: 'Updating...');
+      Map<String, dynamic> params = {
+        'type': _dropdownStimulus.controller.value,
+        'upright': double.parse(_uprightController.text),
+        'lyingFront': double.parse(_lyingFrontController.text),
+        'lyingBack': double.parse(_lyingBackController.text),
+        'lyingLeft': double.parse(_lyingLeftController.text),
+        'lyingRight': double.parse(_lyingRightController.text),
+        'reclining': double.parse(_recliningController.text),
+      };
 
-  void _hideLoading() async {
-    await EasyLoading.dismiss();
+      final result =
+          await _settingProvider.uploadStimulusInfor(jsonEncode(params));
+      if (result.statusCode == 409) {
+        if (_curStimulusIndex == 1) {
+          // Type A
+          _authProvider.typeA = result.number;
+        } else if (_curStimulusIndex == 2) {
+          // Type B
+          _authProvider.typeB = result.number;
+        } else if (_curStimulusIndex == 3) {
+          // Type C
+          _authProvider.typeC = result.number;
+        }
+        Fluttertoast.showToast(msg: result.message);
+      } else {
+        Fluttertoast.showToast(msg: 'Failed enter Stimulus Information');
+      }
+      EasyLoading.dismiss();
+    }
   }
 }
