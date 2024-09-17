@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CommentDropDownStimulator extends StatelessWidget {
+class CommentDropDownStimulus extends StatelessWidget {
   final List<String> _list = <String>['선택', 'A', 'B', 'C'];
-  final StimulatorController controller;
-  CommentDropDownStimulator({super.key, required this.controller});
-
-  List<String> get list => _list;
+  final StimulusController controller;
+  CommentDropDownStimulus({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +24,11 @@ class CommentDropDownStimulator extends StatelessWidget {
       ),
     );
   }
+
+  List<String> get list => _list;
 }
 
-class StimulatorController extends GetxController {
+class StimulusController extends GetxController {
   final RxString _value = '선택'.obs;
 
   String get value => _value.value;

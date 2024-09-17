@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pain_record/widgets/blog_comment/comment_dropdown_stimulator.dart';
+import 'package:pain_record/widgets/blog_comment/comment_dropdown_stimulus.dart';
 
 class CommentWidgetStimulusInfor extends StatelessWidget {
   final _isStimulusCharge = false.obs;
-  final _activeDropDown = CommentDropDownStimulator(
-    controller: StimulatorController(),
+  final _activeDropDown = CommentDropDownStimulus(
+    controller: StimulusController(),
   );
-  final _sleepDropDown = CommentDropDownStimulator(
-    controller: StimulatorController(),
+  final _sleepDropDown = CommentDropDownStimulus(
+    controller: StimulusController(),
   );
   CommentWidgetStimulusInfor({super.key});
 
