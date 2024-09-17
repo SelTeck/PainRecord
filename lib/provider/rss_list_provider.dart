@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:pain_record/commmon/define.dart';
@@ -10,11 +11,10 @@ class RssListProvider with ChangeNotifier {
   // final _memoizer = AsyncMemoizer<List<BlogRss>>();
   set page(int page) => _page = page;
 
-  Future<List<BlogRss>> fetchBlogRssList(String token) async {
+  Future<List<BlogRss>> fetchBlogRssList() async {
     _page += 1;
 
-    print('SelTeck ... called _getBlogRssInfo. page = $_page');
-    Session.headers['Authorization'] = 'Bearer $token';
+    log('SelTeck ... called _getBlogRssInfo. page = $_page');
 
     final response = await Session.get(
         url: '${Session.host}/records/list/$_page/${Defines.VIEW_COUNT}');
