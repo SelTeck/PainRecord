@@ -8,9 +8,6 @@ import 'package:pain_record/model/commentinfo.dart';
 class CommentProvider with ChangeNotifier {
   // final AsyncMemoizer _morizer = AsyncMemoizer();
 
-  CommentInfo? _commentInfo;
-  CommentInfo? get commentInfo => _commentInfo;
-
   Future<CommentInfo?> searchComment(int blogIndex) async {
     final response = await Session.get(
         url: '${Session.host}/records/data/daily/comment/$blogIndex');
