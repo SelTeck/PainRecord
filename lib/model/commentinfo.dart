@@ -35,7 +35,7 @@ class CommentInfo {
         takeAnalogesic: json['Analgesic'],
         takeNarcotic: json['Narcotic'],
         usePath: json['usePath'],
-        comment: json['comment'],
+        comment: json['Comments'],
         swellingLv: json['swellingLv'],
         activeMode: json['activeMode'],
         sleepMode: json['sleepMode'],
