@@ -16,6 +16,10 @@ class AuthProvider with ChangeNotifier {
   int get typeB => _typeB;
   int get typeC => _typeC;
 
+  set typeA(value) => _typeA = value;
+  set typeB(value) => _typeB = value;
+  set typeC(value) => _typeC = value;
+
   Future<bool> fetchUserCheck(String mobileNumber) async {
     Result? result;
 
