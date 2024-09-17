@@ -79,9 +79,13 @@ class _BlogCommentView extends State<BlogCommentView> {
             _medicineInforBox,
             Padding(
               padding: const EdgeInsets.fromLTRB(5.0, 12.0, 5.0, 0.0),
-              child: TextField(
+              child: TextFormField(
                 controller: _commentTextController,
+                minLines: 1,
+                maxLines: 2,
                 decoration: const InputDecoration(
+                  hintText: 'Enter Message',
+                  hintStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
                 ),
               ),
