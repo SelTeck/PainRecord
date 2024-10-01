@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:pain_record/provider/auth_provider.dart';
 import 'package:pain_record/provider/setting_provider.dart';
-import 'package:pain_record/widgets/setting/setting_textfield_stimulus_infor.dart';
 import 'package:pain_record/widgets/setting/setting_dropdown_stimulus.dart';
+import 'package:pain_record/widgets/setting/setting_textfield_stimulus_infor.dart';
 import 'package:provider/provider.dart';
 
 class SettingView extends StatefulWidget {
@@ -17,8 +18,7 @@ class SettingView extends StatefulWidget {
 }
 
 class _SettingView extends State<SettingView> {
-  // final RxString _selectStimulus = '선택'.obs;
-  // final List<String> _stimulusModes = ['선택', 'A', 'B', 'C'];
+  final _isAutoLogin = false.obs;
 
   final _uprightController = TextEditingController();
   final _lyingBackController = TextEditingController();
@@ -27,33 +27,36 @@ class _SettingView extends State<SettingView> {
   final _recliningController = TextEditingController();
   final _lyingFrontController = TextEditingController();
 
-  late int _curStimulusIndex;
   late AuthProvider _authProvider;
   late SettingProvider _settingProvider;
   late SettingDropdownStimulus _dropdownStimulus;
 
+  int _curStimulusIndex = 0;
+
   @override
   void initState() {
     _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    _curStimulusIndex = 0;
+    _initSharedPreferences();
+
     _settingProvider = SettingProvider();
     _dropdownStimulus = SettingDropdownStimulus(
-        controller: StimulusController(),
-        onChanged: () {
-          if (_dropdownStimulus.controller.value == '선택') {
-            _clearTextEditingController();
+      controller: StimulusController(),
+      onChanged: () {
+        if (_dropdownStimulus.controller.value == '선택') {
+          _clearTextEditingController();
+        } else {
+          if (_dropdownStimulus.controller.value == 'A') {
+            _curStimulusIndex = _authProvider.typeA;
+          } else if (_dropdownStimulus.controller.value == 'B') {
+            _curStimulusIndex = _authProvider.typeB;
           } else {
-            if (_dropdownStimulus.controller.value == 'A') {
-              _curStimulusIndex = _authProvider.typeA;
-            } else if (_dropdownStimulus.controller.value == 'B') {
-              _curStimulusIndex = _authProvider.typeB;
-            } else {
-              // if (_dropdownStimulus.controller.value == 'C') {
-              _curStimulusIndex = _authProvider.typeC;
-            }
-            searchStimulusInfor();
+            // if (_dropdownStimulus.controller.value == 'C') {
+            _curStimulusIndex = _authProvider.typeC;
           }
-        });
+          searchStimulusInfor();
+        }
+      },
+    );
 
     super.initState();
   }
@@ -169,6 +172,18 @@ class _SettingView extends State<SettingView> {
                       ),
                     ),
                   ),
+                  Obx(
+                    () => CheckboxListTile(
+                      value: _isAutoLogin.value,
+                      contentPadding: EdgeInsets.zero, // Left Padding remove
+                      onChanged: (bool? value) {
+                        _isAutoLogin.value = value!;
+                        _saveSharedPreferences();
+                      },
+                      title: const Text('자동 로그인'),
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -176,6 +191,18 @@ class _SettingView extends State<SettingView> {
         },
       ),
     );
+  }
+
+  _initSharedPreferences() async {
+    final prefs = await _authProvider.prefs;
+    final value = prefs.getString("AUTO_LOGIN");
+    _isAutoLogin.value = (value == null || value.isEmpty) ? false : true;
+  }
+
+  _saveSharedPreferences() async {
+    final prefs = await _authProvider.prefs;
+    prefs.setString(
+        "AUTO_LOGIN", _isAutoLogin.value ? _authProvider.account : "");
   }
 
   void _clearTextEditingController() {
