@@ -40,6 +40,12 @@ class SettingTextfieldStimulusInfor extends StatelessWidget {
                   signed: true, decimal: true),
               showCursor: true,
               controller: controller,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the value';
+                }
+                return null;
+              },
               inputFormatters: <TextInputFormatter>[
                 LengthLimitingTextInputFormatter(4),
                 // FilteringTextInputFormatter.digitsOnly,
