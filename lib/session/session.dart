@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class Session {
   // static const host = 'http://two-cats.iptime.org:3000';
-  static const host = 'http://192.168.0.42:3000';
+  static const host = 'http://192.168.0.73:3000';
   static Map<String, String> headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
